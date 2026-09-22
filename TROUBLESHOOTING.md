@@ -80,3 +80,21 @@
 
 - **สถานะ:** แก้ไขแล้วโดยเปลี่ยน repository เป็น public
 - **ผลหลังแก้:** EC2 อ่าน `refs/heads/main` ผ่าน HTTPS ได้สำเร็จที่ commit `420cf8a`
+
+## P-006 — Disk ของ EC2 เล็กกว่าขนาด Persistent Volume ที่ control plane ขอ
+
+- **ขั้นที่พบ:** หลัง bootstrap control plane
+- **อาการ:** control plane สร้าง PVC แบบ local-path รวม 113 GiB:
+
+  | PVC | Request |
+  | --- | ---: |
+  | `postgres-data-postgresql-onix-v2-0` | 100 GiB |
+  | `redis-data-redis-master-0` | 8 GiB |
+  | `job-geoip-db-sync-pvc` | 5 GiB |
+
+  แต่ EC2 มี root disk 48 GiB ใช้แล้ว 14 GiB เหลือประมาณ 35 GiB. `/data` อยู่บน filesystem เดียวกับ root disk.
+
+- **ผลกระทบ:** local-path provisioner สร้าง PVC ได้โดยไม่ reserve หรือ enforce capacity จึงไม่ fail ตั้งแต่ต้น แต่ PostgreSQL, Redis หรือ GeoIP สามารถทำให้ node disk เต็มและทำให้ database/K3s ใช้งานไม่ได้.
+- **วิธีแก้:** ขยาย EBS root volume เป็นอย่างน้อย 150 GiB; แนะนำ 200 GiB เพื่อรองรับ requested storage, K3s images/logs และ operational headroom. หลังขยาย volume ให้ขยาย ext4 filesystem บน Ubuntu แล้วตรวจ `df -hT`.
+- **สถานะ:** รอขยาย EBS volume
+- **ผลหลังแก้:** รอการตรวจสอบ

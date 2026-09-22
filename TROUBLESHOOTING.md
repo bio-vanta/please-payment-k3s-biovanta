@@ -107,3 +107,12 @@
 - **วิธีแก้:** เปลี่ยน script ให้ข้าม `alm-config.yaml` เป็นค่า default; ต้องกำหนด `ENABLE_DISCORD_ALERTS=true` แบบ explicit หลังตั้ง `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet.
 - **สถานะ:** แก้ไขแล้ว
 - **ผลหลังแก้:** ติดตั้ง monitoring สำเร็จและ `kubectl get alertmanagerconfig -n monitoring` ไม่พบ Discord AlertmanagerConfig
+
+## P-008 — รหัสใน `initial-secret` ไม่ใช่รหัส Login ของ Admin
+
+- **ขั้นที่พบ:** ขั้น acceptance หลัง bootstrap
+- **อาการ:** Login ด้วย username `admin` และค่าจาก `INITIAL_PASSWORD` ใน `initial-secret` ตอบ `401 Unauthorized, incorrect user or password` แม้ Admin/API pods เป็น `Running`.
+- **สาเหตุ:** deployment `please-payment-prod-onix-api` ไม่ได้ส่ง `INITIAL_USER` หรือ `INITIAL_PASSWORD` เข้า API container. API seed บัญชี `admin` ระหว่าง database migration และสร้างรหัสผ่านแบบสุ่มที่เขียนครั้งเดียวใน startup log: `MigrateUsers : Added [admin] [<seed-password>] [True]`.
+- **วิธีแก้:** ดึง seed password จาก startup log ทันทีหลัง bootstrap ด้วย `kubectl logs -n please-payment-production deploy/please-payment-prod-onix-api --all-containers=true | grep 'MigrateUsers : Added'`, ใช้ login ที่ Admin แล้วเปลี่ยนรหัสผ่านทันที. ห้ามเก็บ seed password ใน Git หรือ `.env`.
+- **สถานะ:** แก้ไขแล้ว
+- **ผลหลังแก้:** คู่มือ `CLEAN_INSTALL.md` เพิ่มขั้นรับ credential ที่ถูกต้อง และยกเลิกคำแนะนำที่ทำให้ใช้ `INITIAL_PASSWORD` เป็น Admin password.

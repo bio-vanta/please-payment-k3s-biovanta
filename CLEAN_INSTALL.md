@@ -246,6 +246,20 @@ done
 | `https://api.bevorax.com` | `404` ที่ root path เป็นปกติ หากไม่มี root route |
 | `https://admin.bevorax.com/tools/argocd` | `200` |
 
+### รับรหัสผ่าน Admin ที่ระบบ seed และทดสอบ login
+
+API สร้างบัญชี Admin เริ่มต้นระหว่าง database migration โดยจะเขียนรหัสผ่านครั้งเดียวลง startup log ในรูปแบบ `MigrateUsers : Added [...] [...] [True]`. ค่า `INITIAL_USER` และ `INITIAL_PASSWORD` ใน `initial-secret` **ไม่ใช่** credential สำหรับหน้า Admin จึงห้ามใช้แทนรหัสจาก log นี้.
+
+ทันทีหลัง bootstrap ให้ดึง credential และเก็บไว้ใน password manager ของผู้ดูแล:
+
+```bash
+kubectl logs -n please-payment-production \
+  deploy/please-payment-prod-onix-api --all-containers=true \
+  | grep 'MigrateUsers : Added'
+```
+
+ผลลัพธ์มีรูปแบบ `##### MigrateUsers : Added [admin] [<seed-password>] [True]`. ใช้ `admin` และ `<seed-password>` ที่ได้ไป login ที่ `https://admin.bevorax.com` แล้วเปลี่ยนรหัสผ่านผ่านหน้า Admin ทันที. อย่า commit, ส่งใน chat, หรือบันทึกรหัสนี้ลงไฟล์ `.env`/Git.
+
 ตรวจพื้นที่ disk ก่อนส่งมอบ:
 
 ```bash

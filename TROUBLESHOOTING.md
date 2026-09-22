@@ -98,3 +98,12 @@
 - **วิธีแก้:** ขยาย EBS root volume เป็นอย่างน้อย 150 GiB; แนะนำ 200 GiB เพื่อรองรับ requested storage, K3s images/logs และ operational headroom. หลังขยาย volume ให้ขยาย ext4 filesystem บน Ubuntu แล้วตรวจ `df -hT`.
 - **สถานะ:** รอขยาย EBS volume
 - **ผลหลังแก้:** รอการตรวจสอบ
+
+## P-007 — Monitoring script ตั้ง Alertmanager ให้ส่งไป Discord ที่ถูก defer
+
+- **ขั้นที่พบ:** preflight ก่อนติดตั้ง monitoring
+- **อาการ:** `03-install-monitoring.bash` apply `alm-config.yaml` เสมอ ขณะที่ environment นี้ยังไม่มี `discord-alm` service เพราะ Discord ถูก defer.
+- **ผลกระทบ:** Alertmanager จะพยายามส่ง webhook ไปยัง service ที่ไม่มีอยู่ และเกิด notification delivery errors.
+- **วิธีแก้:** เปลี่ยน script ให้ข้าม `alm-config.yaml` เป็นค่า default; ต้องกำหนด `ENABLE_DISCORD_ALERTS=true` แบบ explicit หลังตั้ง `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet.
+- **สถานะ:** แก้ไขแล้ว
+- **ผลหลังแก้:** รอตรวจ monitoring โดยไม่มี AlertmanagerConfig ของ Discord

@@ -75,7 +75,7 @@ sudo apt install -y git curl ca-certificates
 mkdir -p ~/please-payment
 cd ~/please-payment
 git clone https://github.com/bio-vanta/please-payment-k3s-biovanta.git
-cd please-payment-k3s-pjp
+cd please-payment-k3s-biovanta
 git switch main
 git pull --ff-only origin main
 ```
@@ -92,7 +92,7 @@ git status --short --branch
 - [x] ติดตั้ง K3s แบบ single-node พร้อมปิด Traefik (ใช้ NGINX Ingress จาก repo แทน)
 
 ```bash
-cd ~/please-payment/please-payment-k3s-pjp
+cd ~/please-payment/please-payment-k3s-biovanta
 sudo mkdir -p /data
 sudo bash 00-install-k3s.bash
 ```
@@ -123,7 +123,7 @@ helm version
 - [x] สร้างไฟล์ `.env` จาก secret ที่ได้รับ โดยหนึ่งบรรทัดต่อหนึ่งค่าในรูปแบบ `KEY=value`
 
 ```bash
-cd ~/please-payment/please-payment-k3s-pjp
+cd ~/please-payment/please-payment-k3s-biovanta
 nano .env
 chmod 600 .env
 ```
@@ -151,7 +151,7 @@ kubectl logs job/secret-init -n default
 - [x] ติดตั้ง Argo CD, NGINX Ingress, External Secrets และ Cert-Manager
 
 ```bash
-cd ~/please-payment/please-payment-k3s-pjp
+cd ~/please-payment/please-payment-k3s-biovanta
 ./02-initial-addons.bash
 kubectl get helmcharts -n kube-system
 kubectl get pods -A
@@ -182,7 +182,7 @@ Gitea ถูกปิดไว้ใน `02-initial-addons.bash` และ `git-
 - [ ] Bootstrap Argo CD
 
 ```bash
-cd ~/please-payment/please-payment-k3s-pjp
+cd ~/please-payment/please-payment-k3s-biovanta
 ./04-boot-strap.bash
 ```
 
@@ -211,10 +211,12 @@ kubectl get events -n please-payment-production --sort-by=.lastTimestamp
 - [ ] ติดตั้ง Prometheus/Grafana
 
 ```bash
-cd ~/please-payment/please-payment-k3s-pjp
+cd ~/please-payment/please-payment-k3s-biovanta
 ./03-install-monitoring.bash
 kubectl get pods -n monitoring
 ```
+
+ค่า default จะไม่ apply `AlertmanagerConfig` สำหรับ Discord. เมื่อกำหนด `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet แล้ว จึงค่อยรัน `ENABLE_DISCORD_ALERTS=true ./03-install-monitoring.bash`.
 
 - [ ] ตรวจ Loki/Grafana ที่ Argo CD deploy
 

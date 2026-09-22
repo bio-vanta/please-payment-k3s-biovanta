@@ -50,6 +50,10 @@ for i in 1 2; do
 done
 
 # ตอนนี้ชี้ไปที่ DEV environment อยู่ แต่ถ้าเป็น production ต้องเปลี่ยน URL ใน alm-config.yaml ด้วย
-kubectl apply -f alm-config.yaml
+if [ "${ENABLE_DISCORD_ALERTS:-false}" = "true" ]; then
+  kubectl apply -f alm-config.yaml
+else
+  echo "Skipping Discord AlertmanagerConfig (ENABLE_DISCORD_ALERTS is not true)"
+fi
 
 cd ..

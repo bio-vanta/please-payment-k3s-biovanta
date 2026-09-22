@@ -67,3 +67,16 @@
 - **วิธีแก้:** defer Discord โดยให้ ApplicationSet ต้องการ cluster label `discord-enabled=true`. เมื่อพร้อมใช้ให้สร้าง `DISCORD_WEBHOOK` ใน `initial-secret-preset` แล้วเพิ่ม label ดังกล่าว.
 - **สถานะ:** แก้ไขแล้วโดย defer deployment
 - **ผลหลังแก้:** รอตรวจว่าไม่มี Discord Application ถูกสร้างหลัง bootstrap
+
+## P-005 — Data-plane repository ใหม่เป็น private แต่ Argo CD ใช้ HTTPS ไม่มี credentials
+
+- **ขั้นที่พบ:** preflight ก่อน clone/bootstrapping บน EC2
+- **อาการ:** จาก EC2 คำสั่ง `GIT_TERMINAL_PROMPT=0 git ls-remote --heads https://github.com/bio-vanta/please-payment-k3s-biovanta.git main` ล้มเหลวด้วย `fatal: could not read Username for 'https://github.com': terminal prompts disabled`.
+- **ผลกระทบ:** Argo CD จะ clone data-plane repository ไม่ได้ และ Application/ApplicationSet ทั้งหมดที่อยู่ใน repository นี้จะไม่ sync.
+- **วิธีแก้:** เลือกหนึ่งทาง:
+
+  1. เปลี่ยน repository เป็น public แล้วตรวจ `git ls-remote` จาก EC2 ใหม่; หรือ
+  2. สร้าง GitHub fine-grained personal access token ที่มีสิทธิ์ read-only เฉพาะ repository นี้ แล้วสร้าง Argo CD repository Secret สำหรับ `https://github.com/bio-vanta/please-payment-k3s-biovanta.git`.
+
+- **สถานะ:** รอผู้ใช้เลือกวิธีเข้าถึง repository
+- **ผลหลังแก้:** รอการตรวจสอบ

@@ -6,13 +6,13 @@
 
 ## Prerequisites
 
-- [x] SSH เข้าเครื่องด้วย user `ubuntu` ได้
-- [x] EC2 มี root disk 48 GB (เหมาะกับ config ปัจจุบัน; แนะนำ 60 GB สำหรับ buffer ระยะยาว)
-- [ ] Security Group เปิด TCP `22` เฉพาะ IP ผู้ดูแล และเปิด TCP `80`, `443` สำหรับผู้ใช้งาน/Let’s Encrypt
-- [x] DNS A records ของโดเมนที่กำหนดใน `domain1`–`domain3` ชี้ไปที่ public IP `54.254.254.50`
-- [x] EC2 สามารถ pull `biovanta2002/please-protect-jobs:v0.0.14` จาก Docker Hub ได้
-- [ ] EC2 สามารถ pull image ของ `please-payment-control-plane` ได้
-- [ ] มีค่า secret สำหรับสร้างไฟล์ `.env` (ห้าม commit หรือส่งไฟล์นี้เข้าระบบ version control)
+- ✅ SSH เข้าเครื่องด้วย user `ubuntu` ได้
+- ✅ EC2 มี root disk 48 GB (เหมาะกับ config ปัจจุบัน; แนะนำ 60 GB สำหรับ buffer ระยะยาว)
+- ⬜ Security Group เปิด TCP `22` เฉพาะ IP ผู้ดูแล และเปิด TCP `80`, `443` สำหรับผู้ใช้งาน/Let’s Encrypt
+- ✅ DNS A records ของโดเมนที่กำหนดใน `domain1`–`domain3` ชี้ไปที่ public IP `54.254.254.50`
+- ✅ EC2 สามารถ pull `biovanta2002/please-protect-jobs:v0.0.14` จาก Docker Hub ได้
+- ⬜ EC2 สามารถ pull image ของ `please-payment-control-plane` ได้
+- ⬜ มีค่า secret สำหรับสร้างไฟล์ `.env` (ห้าม commit หรือส่งไฟล์นี้เข้าระบบ version control)
 
 เชื่อมต่อเครื่องจาก Git Bash:
 
@@ -24,7 +24,7 @@ ssh -i "/c/Users/Bilbong/Documents/Bio-Vanta/please-payment/please-payment-bevor
 
 ทำรายการนี้ก่อนเริ่มติดตั้ง เพื่อไม่ให้ใช้ค่าโดเมน, email หรือ secret ของ environment เดิมโดยไม่ตั้งใจ
 
-- [ ] แก้ `.env` (เป็น secret ห้าม commit)
+- ⬜ แก้ `.env` (เป็น secret ห้าม commit)
 
 ```dotenv
 # ค่าความเข้ากันได้กับ initial-secret flow; ใช้ค่า non-secret ได้
@@ -46,7 +46,7 @@ openssl rand -hex 32
 
 หากยังไม่ต้องการส่ง Discord alert ให้ปิด application `discord-alm` ใน `99-deployments/applications/app-discord-alm.yaml` แทนการใส่ URL ปลอม; มิฉะนั้นใส่ webhook ที่ใช้งานได้.
 
-- [x] เปลี่ยนโดเมน 3 ค่าใน `99-deployments/manifests/please-payment/values.yaml`
+- ✅ เปลี่ยนโดเมน 3 ค่าใน `99-deployments/manifests/please-payment/values.yaml`
 
 ```yaml
 domain1: admin.yourdomain.com
@@ -56,20 +56,20 @@ domain3: api.yourdomain.com
 
 ค่าเหล่านี้ถูกใช้สร้าง Ingress และ Certificate ของ Admin, Merchant และ API โดยอัตโนมัติ. Repository เวอร์ชันนี้ **ยังไม่มี `domain4` หรือ Ingress สำหรับ `docs.yourdomain.com`** แม้คู่มือบนเว็บที่ใช้อ้างอิงจะกล่าวถึง 4 subdomains; การเพิ่มแค่ `domain4` ใน values จะยังไม่มีผล ต้องเพิ่ม Ingress/Certificate สำหรับ service เอกสารด้วยก่อน.
 
-- [x] เปลี่ยน email ของ Let’s Encrypt ใน `01-bootstrap/cluster-issuer.yaml` เป็น `phanuwat.p2002@gmail.com`
-- [ ] เปลี่ยน `MINIO_ENDPOINT_CUSTOM` ใน `99-deployments/manifests/please-payment/templates/storage-config-cm.yaml` ให้เป็น endpoint object storage ที่ใช้จริง หรือเก็บค่า placeholder นี้ไว้เฉพาะกรณีที่ระบบไม่ได้ใช้ MinIO/S3 แบบ custom endpoint
-- [ ] ตรวจ branch `production` และ Helm values ใน repository `please-payment-control-plane`: `01-bootstrap/argocd-bootstrap-please-payment-prod.yaml` จะให้ Argo CD deploy แอปจริงจาก repo นั้น ไม่ได้อยู่ใน repo นี้
+- ✅ เปลี่ยน email ของ Let’s Encrypt ใน `01-bootstrap/cluster-issuer.yaml` เป็น `phanuwat.p2002@gmail.com`
+- ⬜ เปลี่ยน `MINIO_ENDPOINT_CUSTOM` ใน `99-deployments/manifests/please-payment/templates/storage-config-cm.yaml` ให้เป็น endpoint object storage ที่ใช้จริง หรือเก็บค่า placeholder นี้ไว้เฉพาะกรณีที่ระบบไม่ได้ใช้ MinIO/S3 แบบ custom endpoint
+- ⬜ ตรวจ branch `production` และ Helm values ใน repository `please-payment-control-plane`: `01-bootstrap/argocd-bootstrap-please-payment-prod.yaml` จะให้ Argo CD deploy แอปจริงจาก repo นั้น ไม่ได้อยู่ใน repo นี้
 
 ## 1. เตรียมเครื่องและ pull code
 
-- [x] ติดตั้ง dependencies
+- ✅ ติดตั้ง dependencies
 
 ```bash
 sudo apt update
 sudo apt install -y git curl ca-certificates
 ```
 
-- [x] Clone repository และเลือก branch `main`
+- ✅ Clone repository และเลือก branch `main`
 
 ```bash
 mkdir -p ~/please-payment
@@ -88,8 +88,8 @@ git status --short --branch
 
 ## 2. ติดตั้ง K3s และตั้งค่า kubectl
 
-- [x] สร้าง directory สำหรับ local Persistent Volume
-- [x] ติดตั้ง K3s แบบ single-node พร้อมปิด Traefik (ใช้ NGINX Ingress จาก repo แทน)
+- ✅ สร้าง directory สำหรับ local Persistent Volume
+- ✅ ติดตั้ง K3s แบบ single-node พร้อมปิด Traefik (ใช้ NGINX Ingress จาก repo แทน)
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -113,14 +113,14 @@ kubectl get nodes -o wide
 
 ## 3. ติดตั้ง Helm และสร้าง secrets
 
-- [x] ติดตั้ง Helm (จำเป็นสำหรับ monitoring script)
+- ✅ ติดตั้ง Helm (จำเป็นสำหรับ monitoring script)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 ```
 
-- [x] สร้างไฟล์ `.env` จาก secret ที่ได้รับ โดยหนึ่งบรรทัดต่อหนึ่งค่าในรูปแบบ `KEY=value`
+- ✅ สร้างไฟล์ `.env` จาก secret ที่ได้รับ โดยหนึ่งบรรทัดต่อหนึ่งค่าในรูปแบบ `KEY=value`
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -130,7 +130,7 @@ chmod 600 .env
 
 `01-initial-secrets.bash` จะอ่านทุก key ใน `.env` ไปสร้าง Kubernetes Secret ชื่อ `initial-secret-preset` ใน namespace `default` ดังนั้นต้องตรวจสอบชื่อ key และค่าให้ตรงกับ environment ก่อนทำต่อ. ดูรูปแบบที่ต้องใช้ในหัวข้อ “ค่าที่ผู้ใช้ template ต้องกำหนด”.
 
-- [x] สร้าง initial secrets
+- ✅ สร้าง initial secrets
 
 ```bash
 ./01-initial-secrets.bash
@@ -148,7 +148,7 @@ kubectl logs job/secret-init -n default
 
 ## 4. ติดตั้ง platform addons
 
-- [x] ติดตั้ง Argo CD, NGINX Ingress, External Secrets และ Cert-Manager
+- ✅ ติดตั้ง Argo CD, NGINX Ingress, External Secrets และ Cert-Manager
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -178,8 +178,8 @@ Gitea ถูกปิดไว้ใน `02-initial-addons.bash` และ `git-
 
 ## 5. Bootstrap Argo CD และ Please Payment
 
-- [ ] ยืนยันว่า repo `please-payment-control-plane` และ application image registries เข้าถึงได้จาก EC2
-- [x] Bootstrap Argo CD
+- ⬜ ยืนยันว่า repo `please-payment-control-plane` และ application image registries เข้าถึงได้จาก EC2
+- ✅ Bootstrap Argo CD
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -190,7 +190,7 @@ cd ~/please-payment/please-payment-k3s-biovanta
 
 ขั้นตอนนี้สำคัญเพราะเป็นจุดที่ Argo CD เริ่ม deploy ทั้ง data plane (Ingress, Certificate, Loki, Discord alert, config เสริม) และ control plane (Admin, Merchant, API, jobs, Redis, PostgreSQL). ไฟล์ `argocd-cluster-secret.yaml` ติด label `custom: "true"` ให้ cluster เพื่อให้ ApplicationSet เลือก cluster นี้ได้; หาก label นี้หาย addons ภายใต้ ApplicationSet จะไม่ถูก deploy.
 
-- [x] ตรวจสถานะ Argo CD และ application deployments
+- ✅ ตรวจสถานะ Argo CD และ application deployments
 
 ```bash
 kubectl get applications,applicationsets -n argocd
@@ -208,7 +208,7 @@ kubectl get events -n please-payment-production --sort-by=.lastTimestamp
 
 > Discord alert และ Terminal ถูก defer ใน environment นี้: ApplicationSet จะยังไม่สร้าง application จนกว่า cluster secret ใน namespace `argocd` จะมี label `discord-enabled=true` หรือ `terminal-enabled=true`. Discord ต้องกำหนด `DISCORD_WEBHOOK` ก่อนเปิดใช้; Terminal ต้องเปลี่ยน image ไปเป็น image ที่ pull ได้ หรือกำหนด Artifact Registry credential ก่อนเปิดใช้.
 
-- [x] ติดตั้ง Prometheus/Grafana
+- ✅ ติดตั้ง Prometheus/Grafana
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -218,7 +218,7 @@ kubectl get pods -n monitoring
 
 ค่า default จะไม่ apply `AlertmanagerConfig` สำหรับ Discord. เมื่อกำหนด `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet แล้ว จึงค่อยรัน `ENABLE_DISCORD_ALERTS=true ./03-install-monitoring.bash`.
 
-- [x] ตรวจ Loki/Grafana ที่ Argo CD deploy
+- ✅ ตรวจ Loki/Grafana ที่ Argo CD deploy
 
 ```bash
 kubectl get pods -n loki-log
@@ -230,7 +230,7 @@ Prometheus เก็บ metrics เพื่อดูสุขภาพ cluster/
 
 ## 7. เปิดและตรวจหน้าเว็บ
 
-- [ ] ตรวจ ingress, certificate และ service
+- ⬜ ตรวจ ingress, certificate และ service
 
 ```bash
 kubectl get ingress -n please-payment-production
@@ -238,7 +238,7 @@ kubectl get certificate -n please-payment-production
 kubectl get svc -n please-payment-production
 ```
 
-- [ ] ตรวจ certificate ให้เป็น `Ready=True`
+- ⬜ ตรวจ certificate ให้เป็น `Ready=True`
 
 ```bash
 kubectl wait --for=condition=Ready certificate/admin-cert -n please-payment-production --timeout=10m
@@ -246,7 +246,7 @@ kubectl wait --for=condition=Ready certificate/merchant-cert -n please-payment-p
 kubectl wait --for=condition=Ready certificate/api-cert -n please-payment-production --timeout=10m
 ```
 
-- [x] เข้าเว็บไซต์
+- ✅ เข้าเว็บไซต์
 
   - Admin: `https://admin.yourdomain.com`
   - Merchant: `https://merchant.yourdomain.com`

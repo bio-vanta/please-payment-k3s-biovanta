@@ -4,11 +4,11 @@
 
 ## 0. Preconditions
 
-- [ ] EBS root volume อย่างน้อย **200 GiB** และขยาย ext4 filesystem แล้ว (`df -hT /` ต้องเห็นขนาดใหม่)
-- [ ] เปิด TCP 22 (เฉพาะผู้ดูแล), 80 และ 443 ใน AWS Security Group
-- [ ] ตั้ง `admin.bevorax.com`, `merchant.bevorax.com`, `api.bevorax.com` ไปยัง public IP ของ EC2; ใช้ Cloudflare Proxy ได้
-- [ ] Repository `https://github.com/bio-vanta/please-payment-k3s-biovanta.git` ต้องอ่านได้จาก EC2/Argo CD (public หรือมี read-only credential)
-- [ ] ไม่เปิด Gitea หรือ `git-sync-job.yaml` ใน flow นี้
+- ⬜ EBS root volume อย่างน้อย **200 GiB** และขยาย ext4 filesystem แล้ว (`df -hT /` ต้องเห็นขนาดใหม่)
+- ⬜ เปิด TCP 22 (เฉพาะผู้ดูแล), 80 และ 443 ใน AWS Security Group
+- ⬜ ตั้ง `admin.bevorax.com`, `merchant.bevorax.com`, `api.bevorax.com` ไปยัง public IP ของ EC2; ใช้ Cloudflare Proxy ได้
+- ⬜ Repository `https://github.com/bio-vanta/please-payment-k3s-biovanta.git` ต้องอ่านได้จาก EC2/Argo CD (public หรือมี read-only credential)
+- ⬜ ไม่เปิด Gitea หรือ `git-sync-job.yaml` ใน flow นี้
 
 ## 1. Clone และติดตั้ง K3s
 

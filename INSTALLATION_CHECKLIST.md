@@ -230,7 +230,7 @@ Prometheus เก็บ metrics เพื่อดูสุขภาพ cluster/
 
 ## 7. เปิดและตรวจหน้าเว็บ
 
-- ⬜ ตรวจ ingress, certificate และ service
+- ✅ ตรวจ ingress, certificate และ service
 
 ```bash
 kubectl get ingress -n please-payment-production
@@ -238,7 +238,7 @@ kubectl get certificate -n please-payment-production
 kubectl get svc -n please-payment-production
 ```
 
-- ⬜ ตรวจ certificate ให้เป็น `Ready=True`
+- ✅ ตรวจ certificate ให้เป็น `Ready=True`
 
 ```bash
 kubectl wait --for=condition=Ready certificate/admin-cert -n please-payment-production --timeout=10m
@@ -248,17 +248,17 @@ kubectl wait --for=condition=Ready certificate/api-cert -n please-payment-produc
 
 - ✅ เข้าเว็บไซต์
 
-  - Admin: `https://admin.yourdomain.com`
-  - Merchant: `https://merchant.yourdomain.com`
-  - API: `https://api.yourdomain.com`
-  - Argo CD: `https://admin.yourdomain.com/tools/argocd`
+  - Admin: `https://admin.bevorax.com`
+  - Merchant: `https://merchant.bevorax.com`
+  - API: `https://api.bevorax.com`
+  - Argo CD: `https://admin.bevorax.com/tools/argocd`
 
 ทดสอบจาก EC2 ได้ด้วย:
 
 ```bash
-curl -I https://admin.yourdomain.com
-curl -I https://merchant.yourdomain.com
-curl -I https://api.yourdomain.com
+curl -I https://admin.bevorax.com
+curl -I https://merchant.bevorax.com
+curl -I https://api.bevorax.com
 ```
 
 การตั้งค่า DNS มีความสำคัญต่อทั้งการเข้าหน้าเว็บและ HTTP-01 challenge ของ Let’s Encrypt: สร้าง A record สำหรับ 3 domains ข้างต้นให้ชี้ public IP ของ EC2 และเปิด TCP 80/443 ใน AWS Security Group. หากใช้ Cloudflare แบบ proxy, Cloudflare สามารถออก certificate ที่ edge ได้; หากใช้ DNS only ให้ cert-manager บน cluster ขอ certificate เองผ่าน port 80.

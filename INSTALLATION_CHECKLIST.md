@@ -206,6 +206,8 @@ kubectl get events -n please-payment-production --sort-by=.lastTimestamp
 
 ## 6. ติดตั้ง monitoring และ logging (เลือกใช้ แต่รวมอยู่ใน addons ของ repo)
 
+> Discord alert และ Terminal ถูก defer ใน environment นี้: ApplicationSet จะยังไม่สร้าง application จนกว่า cluster secret ใน namespace `argocd` จะมี label `discord-enabled=true` หรือ `terminal-enabled=true`. Discord ต้องกำหนด `DISCORD_WEBHOOK` ก่อนเปิดใช้; Terminal ต้องเปลี่ยน image ไปเป็น image ที่ pull ได้ หรือกำหนด Artifact Registry credential ก่อนเปิดใช้.
+
 - [ ] ติดตั้ง Prometheus/Grafana
 
 ```bash

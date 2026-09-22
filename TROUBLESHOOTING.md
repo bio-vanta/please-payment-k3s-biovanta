@@ -49,3 +49,21 @@
   การ commit/push ต้องได้รับการยืนยันอย่างชัดเจนจากผู้ใช้ก่อนดำเนินการ.
 - **สถานะ:** รออนุมัติ commit และ push ไป `origin/main`
 - **ผลหลังแก้:** รอการตรวจสอบ
+
+## P-003 — Terminal addon ใช้ image จาก private Artifact Registry
+
+- **ขั้นที่พบ:** preflight ก่อน bootstrap
+- **อาการ:** `99-deployments/manifests/terminal/values.yaml` อ้าง image `asia-southeast1-docker.pkg.dev/its-artifact-commons/utils/ubuntu`. การตรวจจาก EC2 ได้ `401` และ anonymous token ได้ `403`.
+- **ผลกระทบ:** หาก ApplicationSet Terminal deploy ตาม default pod จะเป็น `ImagePullBackOff`.
+- **วิธีแก้:** defer Terminal โดยให้ ApplicationSet ต้องการ cluster label `terminal-enabled=true`. เมื่อพร้อมใช้ให้กำหนด Artifact Registry credential หรือเปลี่ยน image เป็น Docker Hub image ที่ pull ได้ แล้วเพิ่ม label ดังกล่าว.
+- **สถานะ:** แก้ไขแล้วโดย defer deployment
+- **ผลหลังแก้:** รอตรวจว่าไม่มี Terminal Application ถูกสร้างหลัง bootstrap
+
+## P-004 — Discord alert ยังไม่มี webhook สำหรับ environment นี้
+
+- **ขั้นที่พบ:** preflight ก่อน bootstrap
+- **อาการ:** `discord-alm` ต้องอ่าน `DISCORD_WEBHOOK` จาก `initial-secret-preset` แต่ mock `.env` ของ environment นี้ยังไม่มี key นี้ตามที่ผู้ใช้ขอให้เลื่อน Discord ออกไปก่อน.
+- **ผลกระทบ:** หาก ApplicationSet Discord deploy ตาม default ExternalSecret จะไม่สามารถสร้าง credential ที่ใช้งานได้.
+- **วิธีแก้:** defer Discord โดยให้ ApplicationSet ต้องการ cluster label `discord-enabled=true`. เมื่อพร้อมใช้ให้สร้าง `DISCORD_WEBHOOK` ใน `initial-secret-preset` แล้วเพิ่ม label ดังกล่าว.
+- **สถานะ:** แก้ไขแล้วโดย defer deployment
+- **ผลหลังแก้:** รอตรวจว่าไม่มี Discord Application ถูกสร้างหลัง bootstrap

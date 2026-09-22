@@ -1,0 +1,45 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: gitea
+  namespace: kube-system
+spec:
+  repo: https://dl.gitea.com/charts/
+  chart: gitea
+  targetNamespace: gitea
+  createNamespace: false
+  valuesContent: |
+    gitea:
+      admin:
+        existingSecret: gitea-admin-secret
+
+      config:
+        server:
+          ROOT_URL: http://gitea-http.gitea.svc.cluster.local:3000
+        service:
+          DISABLE_REGISTRATION: true
+        user:
+          REQUIRE_PASSWORD_CHANGE: false
+  
+    service:
+      http:
+        type: ClusterIP
+
+    ingress:
+      enabled: false
+
+    persistence:
+      enabled: true
+      size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+
+    postgresql:
+      enabled: true
+      auth:
+        username: gitea
+        password: gitea-db-pass
+        database: gitea
+
+    postgresql-ha:
+      enabled: false

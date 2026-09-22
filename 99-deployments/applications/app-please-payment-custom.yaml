@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: please-payment-custom
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          custom: "true"
+  template:
+    metadata:
+      name: 'please-payment-custom-{{name}}'
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/bio-vanta/please-payment-k3s-biovanta.git
+        targetRevision: "{{name}}" #Based on environment
+        path: '99-deployments/manifests/please-payment'
+      destination:
+        name: in-cluster
+        namespace: please-payment-production
+      syncPolicy:
+        automated:
+          selfHeal: false
+          prune: true
+        syncOptions:
+          - CreateNamespace=true

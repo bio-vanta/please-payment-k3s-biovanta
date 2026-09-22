@@ -1,0 +1,63 @@
+domain: loki-log.sensor.local
+
+loki-stack:
+  enabled: true
+  test_pod:
+    enabled: false
+  promtail:
+    fullnameOverride: promtail
+    config:
+      clients:
+        - url: http://loki-log:3100/loki/api/v1/push
+    initContainer:
+      # -- Specifies whether the init container for setting inotify max user instances is to be enabled
+      - name: init
+        # -- Docker registry, image and tag for the init container image
+        image: docker.io/busybox:1.33
+        # -- Docker image pull policy for the init container image
+        imagePullPolicy: IfNotPresent
+        # -- The inotify max user instances to configure
+        command:
+          - sh
+          - -c
+          - sysctl -w fs.inotify.max_user_instances=1024
+        securityContext:
+          privileged: true
+
+  loki:
+    fullnameOverride: loki-log
+    persistence:
+      enabled: false
+    config: {}
+    alerting_groups: []
+
+  grafana:
+    enabled: true
+    fullnameOverride: loki-log-grafana
+    envRenderSecret: {}
+    admin:
+      existingSecret: "grafana-credentials"
+      userKey: GRAFANA_USER
+      passwordKey: GRAFANA_PASSWORD
+    image:
+      tag: 9.5.21
+
+    grafana.ini:
+      server:
+        root_url: "%(protocol)s://%(domain)s/tools/grafana-loki"
+        serve_from_sub_path: true
+        domain: ""
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: Server
+          url: http://loki-log.loki-log.svc.cluster.local:3100
+
+    #    - name: Tempo
+    #      type: tempo
+    #      access: Server
+    #      url: http://tempo.tempo.svc.cluster.local:3100

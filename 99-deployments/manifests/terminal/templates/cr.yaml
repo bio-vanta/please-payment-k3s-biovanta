@@ -1,0 +1,63 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: terminal-cluster-role
+rules:
+
+# ---- Pods (ดู / ลบ) ----
+- apiGroups: [""]
+  resources:
+    - pods
+  verbs:
+    - get
+    - list
+    - watch
+    - delete
+
+# ---- Cluster scoped read-only ----
+- apiGroups: [""]
+  resources:
+    - nodes
+    - namespaces
+    - services
+  verbs:
+    - get
+    - list
+    - watch
+
+# ---- Pod Logs ----
+- apiGroups: [""]
+  resources:
+    - pods/log
+  verbs:
+    - get
+
+# ---- Pod Exec ----
+- apiGroups: [""]
+  resources:
+    - pods/exec
+  verbs:
+    - create
+
+# ---- Workloads ใน apps ----
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - statefulsets
+    - daemonsets
+  verbs:
+    - get
+    - list
+    - watch
+    - patch
+
+# ---- Workloads ใน batch ----
+- apiGroups: ["batch"]
+  resources:
+    - cronjobs
+    - jobs
+  verbs:
+    - get
+    - list
+    - watch
+    - patch

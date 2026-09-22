@@ -1,0 +1,42 @@
+discord-alm:
+  enabled: true
+  fullnameOverride: discord-alm
+  nameOverride: discord-alm
+
+  ingress:
+    enabled: false
+
+  podDisruptionBudget:
+    enabled: false
+
+  pods:
+    controller: deployment
+    replicas: 1
+    resources:
+      limits:
+        cpu: 100m
+        memory: 150Mi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    image:
+      name: rogerrum/alertmanager-discord
+      tag: "1.0.6"
+
+    env:
+      - name: DISCORD_WEBHOOK
+        valueFrom:
+          secretKeyRef:
+            name: discord-alm-credentials
+            key: DISCORD_WEBHOOK
+
+      - name: DISCORD_USERNAME
+        value: "Alert Manager"
+
+  service:
+    enabled: true
+    ports:
+      - port: 9094
+        targetPort: 9094
+        protocol: TCP
+        name: http

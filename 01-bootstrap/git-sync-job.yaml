@@ -1,0 +1,123 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: git-sync-job
+  namespace: gitea
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: git-sync
+          image: asia-southeast1-docker.pkg.dev/its-artifact-commons/utils/git-sync:v0.0.2
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for Gitea at ${GITEA_BASE_URL}..."
+
+              export GIT_DEST_TOKEN="$GITEA_USERNAME:$GITEA_PASSWORD"
+              MAX_RETRIES=60
+              SLEEP_SECONDS=5
+
+              i=1
+              while [ $i -le $MAX_RETRIES ]; do
+                status=$(curl -s -o /dev/null -w "%{http_code}" "${GITEA_BASE_URL}/api/v1/version")
+
+                if [ "$status" = "200" ]; then
+                  echo "Gitea is ready!"
+                  READY=1
+                  break
+                fi
+
+                echo "Attempt $i: Gitea not ready (status=$status), retrying in ${SLEEP_SECONDS}s..."
+                i=$((i+1))
+                sleep $SLEEP_SECONDS
+              done
+
+              if [ "$READY" -ne 1 ]; then
+                echo "Gitea not ready after ${MAX_RETRIES} attempts"
+                exit 1
+              fi
+              
+              echo "Gitea is UP and READY!"
+              echo "Gitea is ready. Running git-sync..."
+
+              ruby git-sync.rb
+          env:
+            - name: GIT_SOURCE_TEMPLATE
+              value: "https://github.com/wintech-thai/{repo}.git"
+
+            - name: GIT_DEST_TEMPLATE
+              value: "http://gitea-http.gitea.svc.cluster.local:3000/{repo}.git"
+
+            ### Source ###
+            - name: GIT_SOURCE_REPO1
+              value: "please-protect-rproxy-data-plane"
+
+            - name: GIT_SOURCE_REPO2
+              value: "" # Skip control plane
+
+            - name: GIT_SOURCE_REPO3
+              value: "" # Skip control plane
+
+
+            - name: GIT_SOURCE_REF_TYPE1
+              value: "branch"
+
+            - name: GIT_SOURCE_REF_TYPE2
+              value: "branch"
+
+            - name: GIT_SOURCE_REF_TYPE3
+              value: "branch"
+
+
+            - name: GIT_SOURCE_REF_NAME1
+              value: "main"
+
+            - name: GIT_SOURCE_REF_NAME2
+              value: "development"
+
+            - name: GIT_SOURCE_REF_NAME3
+              value: "production"
+
+            ### Destination ###
+            - name: GIT_DEST_REPO1
+              value: "local/data-plane"
+
+            - name: GIT_DEST_REPO2
+              value: "local/control-plane-dev"
+
+            - name: GIT_DEST_REPO3
+              value: "local/control-plane-prod"
+
+
+            - name: GIT_DEST_REF_NAME1
+              value: "main"
+
+            - name: GIT_DEST_REF_NAME2
+              value: "development"
+
+            - name: GIT_DEST_REF_NAME3
+              value: "production"
+
+
+            ### Gitea ###
+            - name: GIT_PROVIDER
+              value: "gitea"
+
+            - name: GITEA_BASE_URL
+              value: "http://gitea-http.gitea.svc.cluster.local:3000"
+
+            - name: GITEA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret # สร้างที่ initial-secrets.bash
+                  key: username
+
+            - name: GITEA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-admin-secret # สร้างที่ initial-secrets.bash
+                  key: password

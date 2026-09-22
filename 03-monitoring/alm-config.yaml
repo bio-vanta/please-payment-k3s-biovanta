@@ -1,0 +1,61 @@
+---
+# Note : Put this in the application folder because we don't want Helm to render it
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alerts-slack-01
+  namespace: monitoring
+spec:
+  receivers:
+    - name: null-notifications
+    - name: 'discord-notifications'
+      webhookConfigs:
+      - url: 'http://discord-alm-main.discord-alm.svc.cluster.local:9094'
+  route:
+    groupBy:
+      - alertname
+    matchers:
+      - matchType: =~
+        name: alertname
+        value: .+
+    groupInterval: 5m
+    groupWait: 30s
+    receiver: null-notifications
+    repeatInterval: 4h
+    routes:
+      - groupBy:
+          - alertname
+        matchers:
+          - matchType: =~
+            name: alertname
+            value: 'KubeControllerManagerDown|KubeProxyDown|KubeSchedulerDown|InfoInhibitor|etcdInsufficientMembers|etcdMembersDown'
+        groupInterval: 5m
+        groupWait: 30s
+        receiver: null-notifications
+        repeatInterval: 4h
+        continue: false
+      - groupBy:
+          - alertname
+        matchers:
+          - matchType: =~
+            name: alertname
+            value: 'TargetDown'
+          - matchType: =~
+            name: job
+            value: 'kube-controller-manager|kube-scheduler|kube-etcd'
+        groupInterval: 5m
+        groupWait: 30s
+        receiver: null-notifications
+        repeatInterval: 4h
+        continue: false
+      - groupBy:
+          - alertname
+        matchers:
+          - matchType: =~
+            name: alertname
+            value: .+
+        groupInterval: 5m
+        groupWait: 30s
+        receiver: discord-notifications
+        repeatInterval: 4h
+        continue: false

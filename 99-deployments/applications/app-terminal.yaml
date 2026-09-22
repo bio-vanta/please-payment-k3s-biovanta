@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: terminal
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          custom: "true"
+  template:
+    metadata:
+      name: 'terminal-{{name}}'
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/bio-vanta/please-payment-k3s-biovanta.git
+        targetRevision: "{{name}}" #Based on environment
+        path: '99-deployments/manifests/terminal'
+      destination:
+        name: in-cluster
+        namespace: terminal
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true

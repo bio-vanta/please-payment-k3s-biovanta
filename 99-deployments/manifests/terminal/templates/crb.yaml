@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: terminal-cluster-binding
+subjects:
+- kind: ServiceAccount
+  name: terminal-sa
+  namespace: terminal
+roleRef:
+  kind: ClusterRole
+  name: terminal-cluster-role
+  apiGroup: rbac.authorization.k8s.io

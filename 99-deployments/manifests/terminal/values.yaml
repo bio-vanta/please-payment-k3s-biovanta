@@ -1,0 +1,14 @@
+image:
+  name: asia-southeast1-docker.pkg.dev/its-artifact-commons/utils/ubuntu
+  tag: v0.0.2
+
+configs: {}
+replica: 1
+
+resources:
+  requests:
+    memory: "200Mi"
+    cpu: "100m"
+  limits:
+    memory: "400Mi"
+    cpu: "150m"

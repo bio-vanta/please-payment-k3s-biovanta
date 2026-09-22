@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: bootstrap-please-payment-prod
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          custom: "true"
+  template:
+    metadata:
+      name: 'bootstrap-please-payment-prod'
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/wintech-thai/please-payment-control-plane.git
+        targetRevision: "production" #Based on environment
+        path: '.'
+        helm:
+          releaseName: please-payment-prod
+          ignoreMissingValueFiles: true
+
+          parameters:
+            - name: jobAiKnowledgeDispatcherEnable
+              value: "no"
+
+          valueFiles:
+            - values-files/values-production.yaml
+
+            # redis
+            - values-files/redis/redis-00-values.yaml
+
+            # postgresql
+            - values-files/postgresql/postgresql-00-values.yaml
+
+            # please-payment-admin
+            - values-files/please-payment-admin/please-payment-admin-00-values.yaml
+            - values-files/please-payment-admin/please-payment-admin-01-production-values.yaml
+            - values-files/please-payment-admin/please-payment-admin-03-production-image-tag.yaml
+
+            # please-payment-merchant
+            - values-files/please-payment-merchant/please-payment-merchant-00-values.yaml
+            - values-files/please-payment-merchant/please-payment-merchant-01-production-values.yaml
+            - values-files/please-payment-merchant/please-payment-merchant-03-production-image-tag.yaml
+
+            # please-payment-web
+            - values-files/please-payment-web/please-payment-web-00-values.yaml
+            - values-files/please-payment-web/please-payment-web-01-production-values.yaml
+            - values-files/please-payment-web/please-payment-web-03-production-image-tag.yaml
+
+            # onix-jobs
+            - values-files/onix-jobs/onix-jobs-00-values.yaml
+            - values-files/onix-jobs/onix-jobs-01-production-values.yaml
+            - values-files/onix-jobs/onix-jobs-03-production-image-tag.yaml
+
+            # onix-api
+            - values-files/onix-api/onix-api-00-values.yaml
+            - values-files/onix-api/onix-api-01-production-values.yaml
+            - values-files/onix-api/onix-api-03-production-image-tag.yaml
+      destination:
+        name: in-cluster
+        namespace: please-payment-production
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true

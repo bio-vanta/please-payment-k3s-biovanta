@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-nginx
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: nginx
+  namespace: kube-system
+spec:
+  repo: https://kubernetes.github.io/ingress-nginx
+  chart: ingress-nginx
+  version: 4.14.1
+  targetNamespace: ingress-nginx
+  valuesContent: |-
+    controller:
+      service:
+        enabled: false
+
+      hostPort:
+        enabled: true
+        ports:
+          http: 80
+          https: 443
+
+      config:
+        enable-real-ip: "true"
+        hsts: "false"
+        hsts-include-subdomains: "false"
+        hsts-max-age: "0"
+
+        log-format-escape-json: "true"
+        log-format-upstream: '{"time":"$time_iso8601","client_ip":"$realip_remote_addr","remote_addr":"$remote_addr","x_forwarded_for":"$http_x_forwarded_for","request_id":"$req_id","method":"$request_method","uri":"$uri","status":$status,"request_time":$request_time,"upstream_addr":"$upstream_addr","upstream_status":"$upstream_status","upstream_response_time":$upstream_response_time,"host":"$host","user_agent":"$http_user_agent","referer":"$http_referer","bytes_sent":$bytes_sent}'

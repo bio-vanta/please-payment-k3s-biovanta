@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terminal
+spec:
+  replicas: {{ .Values.replica }}
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: terminal
+  template:
+    metadata:
+      labels:
+        app: terminal
+    spec:
+      serviceAccountName: terminal-sa
+      containers:
+      - image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        command:
+          - "/bin/bash"
+        args:
+          - "-c"
+          - "while true; do sleep 3600; done"
+        imagePullPolicy: Always
+        name: terminal
+        resources:
+          requests:
+            memory: "{{ .Values.resources.requests.memory }}"
+            cpu: "{{ .Values.resources.requests.cpu }}"
+          limits:
+            memory: "{{ .Values.resources.limits.memory }}"
+            cpu: "{{ .Values.resources.limits.cpu }}"
+        env:
+        - name: DUMMY
+          value: "001"
+
+        securityContext:
+          #allowPrivilegeEscalation: true
+          runAsUser: 0

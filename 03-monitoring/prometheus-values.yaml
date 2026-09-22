@@ -1,0 +1,36 @@
+fullnameOverride: prometheus
+
+prometheus-node-exporter:
+  hostRootFsMount:
+    enabled: true
+
+grafana:
+  admin:
+    existingSecret: "grafana-credentials"
+    userKey: GRAFANA_USER
+    passwordKey: GRAFANA_PASSWORD
+
+  testFramework:
+    enabled: false
+
+  grafana.ini:
+    server:
+      root_url: "%(protocol)s://%(domain)s/tools/grafana-k8s"
+      serve_from_sub_path: true
+      domain: ""
+
+  sidecar:
+    dashboards:
+      enabled: true
+    datasources:
+      enabled: true
+
+alertmanager:
+  alertmanagerSpec:
+    alertmanagerConfigMatcherStrategy:
+      type: None
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}

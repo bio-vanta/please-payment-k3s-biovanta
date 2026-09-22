@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: discord-alm
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          custom: "true"
+  template:
+    metadata:
+      name: 'discord-alm-{{name}}'
+    spec:
+      project: "default"
+      source:
+        repoURL: https://github.com/bio-vanta/please-payment-k3s-biovanta.git
+        targetRevision: "{{name}}" #Based on environment
+        path: '99-deployments/manifests/discord-alm'
+      destination:
+        name: in-cluster
+        namespace: discord-alm
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true

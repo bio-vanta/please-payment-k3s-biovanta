@@ -57,7 +57,7 @@
 - **ผลกระทบ:** หาก ApplicationSet Terminal deploy ตาม default pod จะเป็น `ImagePullBackOff`.
 - **วิธีแก้:** defer Terminal โดยให้ ApplicationSet ต้องการ cluster label `terminal-enabled=true`. เมื่อพร้อมใช้ให้กำหนด Artifact Registry credential หรือเปลี่ยน image เป็น Docker Hub image ที่ pull ได้ แล้วเพิ่ม label ดังกล่าว.
 - **สถานะ:** แก้ไขแล้วโดย defer deployment
-- **ผลหลังแก้:** รอตรวจว่าไม่มี Terminal Application ถูกสร้างหลัง bootstrap
+- **ผลหลังแก้:** หลัง bootstrap ไม่มี Terminal Application ถูกสร้าง
 
 ## P-004 — Discord alert ยังไม่มี webhook สำหรับ environment นี้
 
@@ -66,7 +66,7 @@
 - **ผลกระทบ:** หาก ApplicationSet Discord deploy ตาม default ExternalSecret จะไม่สามารถสร้าง credential ที่ใช้งานได้.
 - **วิธีแก้:** defer Discord โดยให้ ApplicationSet ต้องการ cluster label `discord-enabled=true`. เมื่อพร้อมใช้ให้สร้าง `DISCORD_WEBHOOK` ใน `initial-secret-preset` แล้วเพิ่ม label ดังกล่าว.
 - **สถานะ:** แก้ไขแล้วโดย defer deployment
-- **ผลหลังแก้:** รอตรวจว่าไม่มี Discord Application ถูกสร้างหลัง bootstrap
+- **ผลหลังแก้:** หลัง bootstrap ไม่มี Discord Application ถูกสร้าง
 
 ## P-005 — Data-plane repository ใหม่เป็น private แต่ Argo CD ใช้ HTTPS ไม่มี credentials
 
@@ -106,4 +106,4 @@
 - **ผลกระทบ:** Alertmanager จะพยายามส่ง webhook ไปยัง service ที่ไม่มีอยู่ และเกิด notification delivery errors.
 - **วิธีแก้:** เปลี่ยน script ให้ข้าม `alm-config.yaml` เป็นค่า default; ต้องกำหนด `ENABLE_DISCORD_ALERTS=true` แบบ explicit หลังตั้ง `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet.
 - **สถานะ:** แก้ไขแล้ว
-- **ผลหลังแก้:** รอตรวจ monitoring โดยไม่มี AlertmanagerConfig ของ Discord
+- **ผลหลังแก้:** ติดตั้ง monitoring สำเร็จและ `kubectl get alertmanagerconfig -n monitoring` ไม่พบ Discord AlertmanagerConfig

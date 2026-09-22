@@ -179,7 +179,7 @@ Gitea ถูกปิดไว้ใน `02-initial-addons.bash` และ `git-
 ## 5. Bootstrap Argo CD และ Please Payment
 
 - [ ] ยืนยันว่า repo `please-payment-control-plane` และ application image registries เข้าถึงได้จาก EC2
-- [ ] Bootstrap Argo CD
+- [x] Bootstrap Argo CD
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -190,7 +190,7 @@ cd ~/please-payment/please-payment-k3s-biovanta
 
 ขั้นตอนนี้สำคัญเพราะเป็นจุดที่ Argo CD เริ่ม deploy ทั้ง data plane (Ingress, Certificate, Loki, Discord alert, config เสริม) และ control plane (Admin, Merchant, API, jobs, Redis, PostgreSQL). ไฟล์ `argocd-cluster-secret.yaml` ติด label `custom: "true"` ให้ cluster เพื่อให้ ApplicationSet เลือก cluster นี้ได้; หาก label นี้หาย addons ภายใต้ ApplicationSet จะไม่ถูก deploy.
 
-- [ ] ตรวจสถานะ Argo CD และ application deployments
+- [x] ตรวจสถานะ Argo CD และ application deployments
 
 ```bash
 kubectl get applications,applicationsets -n argocd
@@ -208,7 +208,7 @@ kubectl get events -n please-payment-production --sort-by=.lastTimestamp
 
 > Discord alert และ Terminal ถูก defer ใน environment นี้: ApplicationSet จะยังไม่สร้าง application จนกว่า cluster secret ใน namespace `argocd` จะมี label `discord-enabled=true` หรือ `terminal-enabled=true`. Discord ต้องกำหนด `DISCORD_WEBHOOK` ก่อนเปิดใช้; Terminal ต้องเปลี่ยน image ไปเป็น image ที่ pull ได้ หรือกำหนด Artifact Registry credential ก่อนเปิดใช้.
 
-- [ ] ติดตั้ง Prometheus/Grafana
+- [x] ติดตั้ง Prometheus/Grafana
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
@@ -218,7 +218,7 @@ kubectl get pods -n monitoring
 
 ค่า default จะไม่ apply `AlertmanagerConfig` สำหรับ Discord. เมื่อกำหนด `DISCORD_WEBHOOK` และเปิด Discord ApplicationSet แล้ว จึงค่อยรัน `ENABLE_DISCORD_ALERTS=true ./03-install-monitoring.bash`.
 
-- [ ] ตรวจ Loki/Grafana ที่ Argo CD deploy
+- [x] ตรวจ Loki/Grafana ที่ Argo CD deploy
 
 ```bash
 kubectl get pods -n loki-log
@@ -246,7 +246,7 @@ kubectl wait --for=condition=Ready certificate/merchant-cert -n please-payment-p
 kubectl wait --for=condition=Ready certificate/api-cert -n please-payment-production --timeout=10m
 ```
 
-- [ ] เข้าเว็บไซต์
+- [x] เข้าเว็บไซต์
 
   - Admin: `https://admin.yourdomain.com`
   - Merchant: `https://merchant.yourdomain.com`

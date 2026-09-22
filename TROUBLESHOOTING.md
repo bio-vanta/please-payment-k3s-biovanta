@@ -47,8 +47,8 @@
   | `TROUBLESHOOTING.md` | บันทึกปัญหาและแนวทางแก้ |
 
   การ commit/push ต้องได้รับการยืนยันอย่างชัดเจนจากผู้ใช้ก่อนดำเนินการ.
-- **สถานะ:** รออนุมัติ commit และ push ไป `origin/main`
-- **ผลหลังแก้:** รอการตรวจสอบ
+- **สถานะ:** แก้ไขแล้ว
+- **ผลหลังแก้:** ย้าย configuration ไป repository `bio-vanta/please-payment-k3s-biovanta`, update ทุก Argo CD `repoURL` ให้ชี้ repository ใหม่ และ publish ไป `main` แล้ว
 
 ## P-003 — Terminal addon ใช้ image จาก private Artifact Registry
 
@@ -78,5 +78,5 @@
   1. เปลี่ยน repository เป็น public แล้วตรวจ `git ls-remote` จาก EC2 ใหม่; หรือ
   2. สร้าง GitHub fine-grained personal access token ที่มีสิทธิ์ read-only เฉพาะ repository นี้ แล้วสร้าง Argo CD repository Secret สำหรับ `https://github.com/bio-vanta/please-payment-k3s-biovanta.git`.
 
-- **สถานะ:** รอผู้ใช้เลือกวิธีเข้าถึง repository
-- **ผลหลังแก้:** รอการตรวจสอบ
+- **สถานะ:** แก้ไขแล้วโดยเปลี่ยน repository เป็น public
+- **ผลหลังแก้:** EC2 อ่าน `refs/heads/main` ผ่าน HTTPS ได้สำเร็จที่ commit `420cf8a`

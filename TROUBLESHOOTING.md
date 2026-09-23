@@ -122,6 +122,7 @@
 - **ขั้นที่พบ:** ขั้นติดตั้ง core addons บน EC2 `Please-Payment-Beverax 2`
 - **อาการ:** Helm install jobs ของ Argo CD, ingress-nginx, cert-manager และ external-secrets จบแล้ว แต่ pod `argocd-dex-server` ยังอยู่สถานะ `PodInitializing` ขณะที่ deployment อื่นส่วนใหญ่ `Available`.
 - **ผลกระทบ:** ยังไม่ถือว่า core addons พร้อมครบ และยังไม่ควรเริ่ม bootstrap applications จนกว่า Dex จะพร้อมหรือยืนยันว่าไม่ได้ถูกใช้งาน.
-- **หลักฐานเบื้องต้น:** ตรวจเมื่อ 2026-09-24; pod มีอายุประมาณ 4 นาที. สาเหตุยังอยู่ระหว่างตรวจ.
-- **วิธีแก้:** อยู่ระหว่างตรวจ pod events, init/container state และ logs ก่อนเลือกวิธีแก้.
+- **หลักฐาน:** ตรวจเมื่อ 2026-09-24; init container `copyutil` จบปกติ แต่ container หลักไม่มี `Image ID` และ event ค้างที่ `Pulling image`. GHCR token/manifest requests สำเร็จ, แต่ทดลองดึง layer ขนาด 23.7 MiB ได้เพียง 2.9 MiB ใน 90 วินาที ก่อน timeout. Pods อื่นและ Helm jobs ไม่พบปัญหา image pull.
+- **สาเหตุ:** การส่ง image layer จาก GHCR ช้ามากหรือค้างบนเส้นทาง CDN ของ registry; ไม่ใช่ Dex container startup/configuration.
+- **วิธีแก้:** กำลังตรวจว่ามี registry mirror ที่ EC2 ดึง layer ได้ปกติหรือไม่; หลังยืนยันจะตั้งค่า Dex image repository ให้ใช้ mirror แล้วรอ pod พร้อม.
 - **สถานะ:** กำลังตรวจสอบ

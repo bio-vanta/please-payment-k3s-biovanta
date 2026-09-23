@@ -124,5 +124,6 @@
 - **ผลกระทบ:** ยังไม่ถือว่า core addons พร้อมครบ และยังไม่ควรเริ่ม bootstrap applications จนกว่า Dex จะพร้อมหรือยืนยันว่าไม่ได้ถูกใช้งาน.
 - **หลักฐาน:** ตรวจเมื่อ 2026-09-24; init container `copyutil` จบปกติ แต่ container หลักไม่มี `Image ID` และ event ค้างที่ `Pulling image`. GHCR token/manifest requests สำเร็จ แต่ทดลองดึง layer ขนาด 23.7 MiB ได้เพียง 2.9 MiB ใน 90 วินาทีก่อน timeout. Docker Hub มี image `dexidp/dex:v2.44.0` ที่ใช้ linux/amd64 manifest digest เดียวกัน และรับ layer 1 MiB ได้ใน 2.7 วินาที.
 - **สาเหตุ:** เส้นทางส่ง image layer จาก GHCR ช้ามากหรือค้าง; ตัว image และ tag ใช้งานได้ผ่าน registry อื่น.
-- **วิธีแก้:** เปลี่ยนค่า Dex image repository ใน Argo CD HelmChart จาก `ghcr.io/dexidp/dex` เป็น `dexidp/dex` โดยคง tag `v2.44.0`; จากนั้นรอให้ pod ดึง image จาก Docker Hub และตรวจจน `Ready`.
-- **สถานะ:** ยืนยันสาเหตุและ mirror แล้ว; กำลังเตรียมเปลี่ยน HelmChart
+- **วิธีแก้:** เปลี่ยนค่า Dex image repository ใน Argo CD HelmChart จาก `ghcr.io/dexidp/dex` เป็น `dexidp/dex` โดยคง tag `v2.44.0`; apply HelmChart ใหม่ให้ K3s Helm controller rollout deployment.
+- **สถานะ:** แก้ไขแล้ว
+- **ผลหลังแก้:** หลัง sync repository commit `1e957cc` และ apply HelmChart, `argocd-dex-server` rollout สำเร็จและเป็น `1/1 Running`; pods ของ Argo CD ทั้งชุดพร้อม.

@@ -2,7 +2,21 @@
 
 คู่มือนี้ติดตั้ง K3s และ deployment configuration จาก repository นี้บน Ubuntu EC2 แบบ single node จนเปิดหน้า Please Payment ได้
 
-> สถานะล่าสุดที่ตรวจเมื่อ 2026-09-22: เชื่อมต่อ SSH ไปที่ `54.254.254.50` ได้แล้ว, เป็น Ubuntu, root disk 48 GB เหลือประมาณ 46 GB และยังไม่มี K3s ติดตั้งอยู่
+> สถานะ clean install ล่าสุด (2026-09-24): EC2 ใหม่ `Please-Payment-Beverax 2` ใช้ Elastic IP `3.0.153.235`, root disk 300 GiB (filesystem ใช้ได้ 290 GiB), ติดตั้ง K3s/addons แล้ว, DNS resolve ผ่าน Cloudflare และ certificates พร้อม
+
+## สถานะ clean install รอบปัจจุบัน
+
+- ✅ EC2 ใหม่และ SSH พร้อม; เครื่องเก่ายังคงหยุดอยู่
+- ✅ Root disk 300 GiB; filesystem เหลือประมาณ 275 GiB หลังติดตั้ง
+- ✅ DNS ของ Admin, Merchant และ API resolve ได้; ไม่ได้แก้ DNS ในรอบนี้
+- ✅ K3s, Argo CD, ingress-nginx, cert-manager และ external-secrets พร้อม
+- ✅ Bootstrap: Applications ทั้งหมดเป็น `Synced` / `Healthy`
+- ✅ Certificates ของ Admin, Merchant และ API เป็น `Ready=True`
+- ✅ PostgreSQL, Redis, Admin, Merchant และ API pods เป็น `Running`; API restart ช่วงเริ่มต้น 4 ครั้งและกลับมา `1/1 Running`
+- ✅ Prometheus, Alertmanager และ Grafana พร้อม; Discord ยังปิดไว้
+- ✅ URL acceptance: Admin `200`, Merchant `200`, API root `404` (คาดหมาย), Argo CD `200`
+- ⬜ Login Admin ด้วย seed credential และเปลี่ยนรหัสผ่านส่วนตัวด้วยตนเอง
+- ℹ️ Monitoring รอบแรกผ่าน SSH non-interactive ต้อง export `KUBECONFIG`; บันทึกวิธีแก้ไว้ใน `TROUBLESHOOTING.md` P-010 แล้ว
 
 ## Prerequisites
 
@@ -212,6 +226,7 @@ kubectl get events -n please-payment-production --sort-by=.lastTimestamp
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
+export KUBECONFIG="$HOME/.kube/config"
 ./03-install-monitoring.bash
 kubectl get pods -n monitoring
 ```

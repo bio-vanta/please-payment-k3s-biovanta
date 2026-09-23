@@ -127,3 +127,12 @@
 - **วิธีแก้:** เปลี่ยนค่า Dex image repository ใน Argo CD HelmChart จาก `ghcr.io/dexidp/dex` เป็น `dexidp/dex` โดยคง tag `v2.44.0`; apply HelmChart ใหม่ให้ K3s Helm controller rollout deployment.
 - **สถานะ:** แก้ไขแล้ว
 - **ผลหลังแก้:** หลัง sync repository commit `1e957cc` และ apply HelmChart, `argocd-dex-server` rollout สำเร็จและเป็น `1/1 Running`; pods ของ Argo CD ทั้งชุดพร้อม.
+
+## P-010 — Monitoring script ใช้ kubeconfig ของ root เมื่อสั่งผ่าน non-interactive SSH
+
+- **ขั้นที่พบ:** ติดตั้ง monitoring หลัง bootstrap
+- **อาการ:** เมื่อเรียก `03-install-monitoring.bash` ผ่านคำสั่ง SSH แบบ non-interactive, `kubectl` ภายใน script พยายามอ่าน `/etc/rancher/k3s/k3s.yaml` และได้ `permission denied`; namespace monitoring มีแล้ว แต่ Prometheus/Alertmanager ยังไม่ถูกสร้างครบ.
+- **สาเหตุ:** `KUBECONFIG` ที่ตั้งใน shell profile ไม่ได้ถูกโหลดใน non-interactive SSH command.
+- **วิธีแก้:** ก่อนเรียก script ให้ตั้ง `export KUBECONFIG="$HOME/.kube/config"` ใน shell เดียวกัน แล้วรัน `ENABLE_DISCORD_ALERTS=false bash 03-install-monitoring.bash` ซ้ำได้; script ใช้ apply จึงทำซ้ำได้.
+- **สถานะ:** แก้ไขแล้ว
+- **ผลหลังแก้:** รอบที่รันพร้อม `KUBECONFIG=/home/ubuntu/.kube/config` สร้าง Grafana, Prometheus และ Alertmanager ได้ครบ; Prometheus และ Alertmanager เป็น `Available=True`, Discord `AlertmanagerConfig` ไม่มีตามที่ตั้งใจ.

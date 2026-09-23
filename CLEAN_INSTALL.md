@@ -210,6 +210,7 @@ Discord และ Terminal ถูก defer โดย ApplicationSet selector. �
 
 ```bash
 cd ~/please-payment/please-payment-k3s-biovanta
+export KUBECONFIG="$HOME/.kube/config"
 ENABLE_DISCORD_ALERTS=false bash 03-install-monitoring.bash
 
 kubectl get pods -n monitoring

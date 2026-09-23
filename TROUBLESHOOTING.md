@@ -122,7 +122,7 @@
 - **ขั้นที่พบ:** ขั้นติดตั้ง core addons บน EC2 `Please-Payment-Beverax 2`
 - **อาการ:** Helm install jobs ของ Argo CD, ingress-nginx, cert-manager และ external-secrets จบแล้ว แต่ pod `argocd-dex-server` ยังอยู่สถานะ `PodInitializing` ขณะที่ deployment อื่นส่วนใหญ่ `Available`.
 - **ผลกระทบ:** ยังไม่ถือว่า core addons พร้อมครบ และยังไม่ควรเริ่ม bootstrap applications จนกว่า Dex จะพร้อมหรือยืนยันว่าไม่ได้ถูกใช้งาน.
-- **หลักฐาน:** ตรวจเมื่อ 2026-09-24; init container `copyutil` จบปกติ แต่ container หลักไม่มี `Image ID` และ event ค้างที่ `Pulling image`. GHCR token/manifest requests สำเร็จ, แต่ทดลองดึง layer ขนาด 23.7 MiB ได้เพียง 2.9 MiB ใน 90 วินาที ก่อน timeout. Pods อื่นและ Helm jobs ไม่พบปัญหา image pull.
-- **สาเหตุ:** การส่ง image layer จาก GHCR ช้ามากหรือค้างบนเส้นทาง CDN ของ registry; ไม่ใช่ Dex container startup/configuration.
-- **วิธีแก้:** กำลังตรวจว่ามี registry mirror ที่ EC2 ดึง layer ได้ปกติหรือไม่; หลังยืนยันจะตั้งค่า Dex image repository ให้ใช้ mirror แล้วรอ pod พร้อม.
-- **สถานะ:** กำลังตรวจสอบ
+- **หลักฐาน:** ตรวจเมื่อ 2026-09-24; init container `copyutil` จบปกติ แต่ container หลักไม่มี `Image ID` และ event ค้างที่ `Pulling image`. GHCR token/manifest requests สำเร็จ แต่ทดลองดึง layer ขนาด 23.7 MiB ได้เพียง 2.9 MiB ใน 90 วินาทีก่อน timeout. Docker Hub มี image `dexidp/dex:v2.44.0` ที่ใช้ linux/amd64 manifest digest เดียวกัน และรับ layer 1 MiB ได้ใน 2.7 วินาที.
+- **สาเหตุ:** เส้นทางส่ง image layer จาก GHCR ช้ามากหรือค้าง; ตัว image และ tag ใช้งานได้ผ่าน registry อื่น.
+- **วิธีแก้:** เปลี่ยนค่า Dex image repository ใน Argo CD HelmChart จาก `ghcr.io/dexidp/dex` เป็น `dexidp/dex` โดยคง tag `v2.44.0`; จากนั้นรอให้ pod ดึง image จาก Docker Hub และตรวจจน `Ready`.
+- **สถานะ:** ยืนยันสาเหตุและ mirror แล้ว; กำลังเตรียมเปลี่ยน HelmChart

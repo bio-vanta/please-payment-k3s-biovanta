@@ -116,3 +116,12 @@
 - **วิธีแก้:** ดึง seed password จาก startup log ทันทีหลัง bootstrap ด้วย `kubectl logs -n please-payment-production deploy/please-payment-prod-onix-api --all-containers=true | grep 'MigrateUsers : Added'`, ใช้ login ที่ Admin แล้วเปลี่ยนรหัสผ่านทันที. ห้ามเก็บ seed password ใน Git หรือ `.env`.
 - **สถานะ:** แก้ไขแล้ว
 - **ผลหลังแก้:** คู่มือ `CLEAN_INSTALL.md` เพิ่มขั้นรับ credential ที่ถูกต้อง และยกเลิกคำแนะนำที่ทำให้ใช้ `INITIAL_PASSWORD` เป็น Admin password.
+
+## P-009 — Argo CD Dex pod ยังไม่พร้อมหลังติดตั้ง core addons
+
+- **ขั้นที่พบ:** ขั้นติดตั้ง core addons บน EC2 `Please-Payment-Beverax 2`
+- **อาการ:** Helm install jobs ของ Argo CD, ingress-nginx, cert-manager และ external-secrets จบแล้ว แต่ pod `argocd-dex-server` ยังอยู่สถานะ `PodInitializing` ขณะที่ deployment อื่นส่วนใหญ่ `Available`.
+- **ผลกระทบ:** ยังไม่ถือว่า core addons พร้อมครบ และยังไม่ควรเริ่ม bootstrap applications จนกว่า Dex จะพร้อมหรือยืนยันว่าไม่ได้ถูกใช้งาน.
+- **หลักฐานเบื้องต้น:** ตรวจเมื่อ 2026-09-24; pod มีอายุประมาณ 4 นาที. สาเหตุยังอยู่ระหว่างตรวจ.
+- **วิธีแก้:** อยู่ระหว่างตรวจ pod events, init/container state และ logs ก่อนเลือกวิธีแก้.
+- **สถานะ:** กำลังตรวจสอบ

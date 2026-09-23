@@ -21,7 +21,10 @@ spec:
         - --basehref=/tools/argocd
         - --rootpath=/tools/argocd
 
-    dex: {}
+    dex:
+      image:
+        repository: dexidp/dex
+        tag: v2.44.0
 
     configs:
       cm:

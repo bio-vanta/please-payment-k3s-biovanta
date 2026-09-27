@@ -6,7 +6,7 @@ spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     preferredChain: "ISRG Root X1"
-    email: roger.zagerepay@gmail.com
+    email: phanuwat.p2002@gmail.com
     privateKeySecretRef:
       name: lets-encrypt-issuer-prod-key # The operator will create this for us
     solvers:

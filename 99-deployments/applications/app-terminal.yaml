@@ -7,7 +7,7 @@ spec:
   - clusters:
       selector:
         matchLabels:
-          terminal-enabled: "true"
+          custom: "true"
   template:
     metadata:
       name: 'terminal-{{name}}'

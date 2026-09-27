@@ -7,7 +7,7 @@ spec:
   - clusters:
       selector:
         matchLabels:
-          discord-enabled: "true"
+          custom: "true"
   template:
     metadata:
       name: 'discord-alm-{{name}}'
